@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,26 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+Route::get('/user/{id}', 'MessageController@getUserData');
+
+Route::post('/registerNewUser', 'MessageController@registerNewUser');
+
+Route::post('/updateProfile', 'MessageController@updateUser');
+
+Route::post('/logIn', 'MessageController@logIn');
+
+
+//->name('data')
+// Route::get('/user', function () {
+//     return [
+//         'name' => 'amir',
+//         'family' => 'parsa',
+//         'roles' => [
+//             'super-admin',
+//             'admin'
+//         ],
+//     ];
+// });

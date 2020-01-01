@@ -12,5 +12,15 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
+Route::get('/hello', function () {
+    return view('hello');
+});
+Route::get('/about', function () {
+    return view('about');
+});
+Route::get('/Contact', function () {
+    return view('Contact');
+});
+Route::post('Contact/submit', 'MessageController@submit');

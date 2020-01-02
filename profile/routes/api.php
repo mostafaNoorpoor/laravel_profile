@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,26 +13,40 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 Route::get('/user/{id}', 'MessageController@getUserData');
 
 Route::post('/registerNewUser', 'MessageController@registerNewUser');
 
 Route::post('/updateProfile', 'MessageController@updateUser');
 
-Route::post('/logIn', 'MessageController@logIn');
+//Route::post('/logIn', 'MessageController@logIn');
 
+Route::post('/checkAdmin', 'MessageController@checkAdmin');
 
-//->name('data')
-// Route::get('/user', function () {
-//     return [
-//         'name' => 'amir',
-//         'family' => 'parsa',
-//         'roles' => [
-//             'super-admin',
-//             'admin'
-//         ],
-//     ];
-// });
+Route::get('/userRoles/{id}', 'MessageController@userRoles');
+
+Route::get('/checkAdminOrUser/{id}', 'MessageController@checkAdminOrUser');
+
+Route::post('/setRoleAndPermission', 'MessageController@setRoleAndPermission');
+
+// Route::post('/login', 'AuthController@login');
+
+// Route::post('/signup', 'AuthController@signup');
+
+// Route::get('/logout', 'AuthController@logout');
+
+// Route::get('/user', 'AuthController@user');
+
+Route::group([
+    'prefix' => 'auth'
+], function () {
+    Route::post('login', 'AuthController@login');
+    Route::post('signup', 'AuthController@signup');
+  
+    Route::group([
+      'middleware' => 'auth:api'
+    ], function() {
+        Route::get('logout', 'AuthController@logout');
+        Route::get('user', 'AuthController@user');
+    });
+});

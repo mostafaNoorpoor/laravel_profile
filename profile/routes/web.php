@@ -12,15 +12,17 @@
 */
 
 Route::get('/', function () {
-    return view('home');
+    return view('welcome');
 });
-Route::get('/hello', function () {
-    return view('hello');
+
+
+Auth::routes();
+
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+
+Route::group(['middleware' => ['auth']], function() {
+    Route::resource('roles','RoleController');
+    Route::resource('users','UserController');
 });
-Route::get('/about', function () {
-    return view('about');
-});
-Route::get('/Contact', function () {
-    return view('Contact');
-});
-Route::post('Contact/submit', 'MessageController@submit');

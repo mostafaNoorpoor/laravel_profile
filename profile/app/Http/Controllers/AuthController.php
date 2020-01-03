@@ -19,7 +19,7 @@ class AuthController extends Controller
             'phone_number' => 'required|string',
             'email' => 'required|string',
         ]);
-        $register = new UserRegister;
+        //$register = new UserRegister; do not forget to write register user function <------
         return response()->json([
             'message' => 'Successfully created user!'
         ], 201);

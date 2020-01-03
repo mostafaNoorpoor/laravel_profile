@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use App\Repository\generateToken\Passport;
+use App\Repository\User\userDB;
 
 class AuthController extends Controller
 {
@@ -18,7 +19,7 @@ class AuthController extends Controller
             'phone_number' => 'required|string',
             'email' => 'required|string',
         ]);
-        //$register = new UserRegister; must update class <<<<---
+        $register = new UserRegister;
         return response()->json([
             'message' => 'Successfully created user!'
         ], 201);
@@ -29,9 +30,10 @@ class AuthController extends Controller
             'phoneNumber' => 'required|string',
             'OTP' => 'required|string',
         ]);
-        $user = new User();
-        $logIn = $user::where('phone_number', $request->phoneNumber)->first();
-        if (Hash::check($request->OTP, $logIn->OTP)) {
+
+        $userFunctions = new userDB;
+        $userOTP = $userFunctions::getUserData($request->phoneNumber);
+        if (Hash::check($request->OTP, $userOTP->OTP)) {
             $generateGrantToken = new Passport;
             $tokens = $generateGrantToken::createTokenPassport($request->phoneNumber, $request->OTP);
             return $tokens;

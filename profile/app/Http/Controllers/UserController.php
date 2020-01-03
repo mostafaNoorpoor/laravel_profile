@@ -16,14 +16,13 @@ class UserController extends Controller
         $request->validate([
             'phoneNumber' => 'required|string',
         ]);
-        $user = new User();
-        if ($user::where('phone_number', $request->phoneNumber)->exists()) {
+        $userFunctions = new userDB;
+        $existUser = $userFunctions::getUserData($request->phoneNumber);
+        if ($existUser) {
             $OTP_code = Self::codeGeneration(4);
             $sms = new SMSNotifierFactory($request->phoneNumber, $OTP_code);
             // if sms sent --> update query --> put if condition here * * * * * * * * * * * * * * * * * * * * * * *
-
-            $OTP = new userDB;
-            $OTP = $OTP::updateOTP($request->phoneNumber, $OTP_code);
+            $OTP = $userFunctions::updateOTP($request->phoneNumber, $OTP_code);
             if ($OTP) {
                 return response()->json(["sms code" => Hash::make($OTP_code), "status" => "sent successFully", "success" => "1"], 201);
             } else {

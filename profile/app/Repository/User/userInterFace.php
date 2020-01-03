@@ -9,4 +9,8 @@ interface userInterFace
     public static function updateOTP($phoneNumber, $OTPCode);
 
     public function updateData();
+
+    public static function ifUserExistByPhoneNumber($phoneNumber);
+
+    public static function getUserData($phoneNumber);
 }

@@ -17,7 +17,7 @@ class UserController extends Controller
             'phoneNumber' => 'required|string',
         ]);
         $userFunctions = new userDB;
-        $existUser = $userFunctions::getUserData($request->phoneNumber);
+        $existUser = $userFunctions::ifUserExistByPhoneNumber($request->phoneNumber);
         if ($existUser) {
             $OTP_code = Self::codeGeneration(4);
             $sms = new SMSNotifierFactory($request->phoneNumber, $OTP_code);

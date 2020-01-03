@@ -2,18 +2,15 @@
 
 namespace App;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Hash;
 
 
 class User extends Authenticatable
 {
-    use Notifiable , HasRoles , HasApiTokens ;
-
-    protected $table = "users" ;
+    use Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -21,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'family_name', 'phone_number', 'email',
     ];
 
     /**
@@ -30,7 +27,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'OTP', 'remember_token',
     ];
 
     /**
@@ -41,4 +38,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function findForPassport($username)
+    {
+        return $this->where('phone_number', $username)->first();
+    }
+
+    public function validateForPassportPasswordGrant($password)
+    {
+        return (Hash::check($password, $this->OTP));
+    }
 }

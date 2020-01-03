@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use App\Repository\generateToken\Passport;
-use App\Repository\User\register as UserRegister;
 
 class AuthController extends Controller
 {
@@ -19,7 +18,7 @@ class AuthController extends Controller
             'phone_number' => 'required|string',
             'email' => 'required|string',
         ]);
-        $register = new UserRegister;
+        //$register = new UserRegister; must update class <<<<---
         return response()->json([
             'message' => 'Successfully created user!'
         ], 201);

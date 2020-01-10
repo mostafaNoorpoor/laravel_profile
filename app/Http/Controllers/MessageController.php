@@ -16,7 +16,7 @@ class MessageController extends Controller
 
     public function getChatList(Request $request)
     {
-        $chatList = $this->chat->getUserChatList($request->userId);
+        $chatList = $this->chat->getUserChatList($request->user());
 
         return response()->json(['data' => $chatList]);
 
@@ -24,14 +24,23 @@ class MessageController extends Controller
 
     public function newChatUser(Request $request)
     {
-        $newChatStatus = $this->chat->setNewChat($request->userId , $request->receiverId , $request->type , $request->subject);
+//        $request->validate([
+//            'receiver_id ' => 'required',
+//            'type ' => 'required',
+//        ]);
+
+        $newChatStatus = $this->chat->createNewChat($request->user() , $request->receiver_id , $request->type , $request->subject);
 
         return response()->json(['data' => $newChatStatus]);
     }
 
     public function userChatInfo($threadId , Request $request)
     {
-        $userChatInfo = $this->chat->getUserChatInfo($threadId , $request->userId);
+//        $request->validate([
+//            'receiver_id ' => 'required',
+//        ]);
+
+        $userChatInfo = $this->chat->getUserChatInfo($threadId , $request->receiver_id);
 
         return response()->json(['data' => $userChatInfo]) ;
 
@@ -46,7 +55,11 @@ class MessageController extends Controller
 
     public function sendMessage($threadId , Request $request)
     {
-        $sendStatus = $this->chat->sendNewMessage($request->userId , $threadId , $request->messageBody);
+//        $request->validate([
+//            'message_body ' => 'required',
+//        ]);
+
+        $sendStatus = $this->chat->sendNewMessage($request->user() , $threadId , $request->message_body);
 
         return response()->json(['data' => $sendStatus]);
     }

@@ -8,28 +8,25 @@ use Carbon\Carbon;
 use Cmgmyr\Messenger\Models\Thread;
 use Cmgmyr\Messenger\Models\Message;
 use Cmgmyr\Messenger\Models\Participant;
+use Illuminate\Pagination\Paginator;
 
 
 class ChatImplement implements ChatRepository
 {
-    public function getUserChatList($userId)
+
+    public function getUserChatList($token)
     {
-        if (User::where('id', $userId)->exists()) {
+        // in handler exceptions --> handling not found token exception
 
-            $message = Thread::forUser($userId)->latest('updated_at')->get();
-
-        } else {
-
-            $message = "user not exist in user table";
-
-        }
+        $message = Thread::forUser($token->id)->latest('updated_at')->get();
 
         return $message;
 
     }
 
-    public function setNewChat($userId, $receiverId , $type , $subject)
+    public function createNewChat($token, $receiverId , $type , $subject)
     {
+
         if ($user = User::where('id', $receiverId)->first()){
 
             switch ($type){
@@ -42,7 +39,7 @@ class ChatImplement implements ChatRepository
 
                     Participant::create([
                         'thread_id' => $thread->id,
-                        'user_id' => $userId,
+                        'user_id' => $token->id,
                         'last_read' => new Carbon,
                     ]);
 
@@ -69,45 +66,64 @@ class ChatImplement implements ChatRepository
 
         } else {
 
-            $message = "user not exist in user table";
+            abort(404 , "receiver user id not found");
+
         }
 
         return $message;
 
     }
 
-    public function getUserChatInfo($threadId , $userId)
+    public function getUserChatInfo($threadId , $receiverId)
     {
-        // $userId --> همون آیدی شخصی که میخواد باهاش چت کنه
 
-        if ($thread = Thread::where('id', $threadId)->first()){
+        if ($user = User::where('id', $receiverId)->first()){
 
-            $message = array();
+            if ($thread = Thread::where('id', $threadId)->first()){
 
-            $message['participants'] = Participant::where([
-                ['user_id', '=', $userId],
-                ['thread_id', '=', $threadId]
-            ])->first();
+                $message = array();
 
-            $message['userInfo'] = User::where('id' , $message['participants']->user_id)->first();
+                // note : its just for user to user ---->
+
+                $message['participants'] = Participant::where([
+                    ['user_id', '=', $receiverId],
+                    ['thread_id', '=', $threadId]
+                ])->first();
+
+                $message['userInfo'] = User::where('id' , $message['participants']->user_id)->first();
+
+                // note : its just for user to user <----
+
+            } else {
+
+                abort(404 , "thread does not exist");
+
+            }
 
         } else {
-            $message = "thread does not exist";
+
+            abort(404 , "receiver user id not found");
+
         }
         return $message ;
     }
 
     public function getChatMessages($threadId, $pages)
     {
-        $messageQuery = Message::where('thread_id' , $threadId) ;
+
+        $messageQuery = Message::where('thread_id' , $threadId)->orderBy('id', 'DESC') ;
 
         if ($messages = $messageQuery->first() ) {
 
-            $message = $messageQuery->paginate($pages);
+            Paginator::currentPageResolver(function() use ($pages) {
+                return $pages;
+            });
+
+            $message = $messageQuery->paginate(15);
 
         } else {
 
-            $message = "messages does not exist with this thread id";
+            abort(404 , "messages does not exist with this thread id");
 
         }
 
@@ -115,15 +131,15 @@ class ChatImplement implements ChatRepository
 
     }
 
-    public function sendNewMessage($userId, $threadId, $messageBody)
+    public function sendNewMessage($token, $threadId, $messageBody)
     {
+
         $message = Message::create([
             'thread_id' => $threadId,
-            'user_id' => $userId,
+            'user_id' => $token->id,
             'body' => $messageBody,
         ]);
 
         return $message ;
-
     }
 }

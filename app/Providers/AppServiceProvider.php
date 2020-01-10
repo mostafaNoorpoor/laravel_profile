@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Schema;
 use App\Repository\ChatImplement ;
 use App\Repository\ChatRepository ;
 
+use App\Repository\UserRepository ;
+use App\Repository\UserImplement ;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -20,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             ChatRepository::class,
             ChatImplement::class
+        );
+        $this->app->bind(
+            UserRepository::class,
+            UserImplement::class
         );
     }
 

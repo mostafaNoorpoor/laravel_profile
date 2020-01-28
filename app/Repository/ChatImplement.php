@@ -4,11 +4,13 @@ namespace App\Repository;
 
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Notifications\Notifiable ;
 
 use Cmgmyr\Messenger\Models\Thread;
 use Cmgmyr\Messenger\Models\Message;
 use Cmgmyr\Messenger\Models\Participant;
 use Illuminate\Pagination\Paginator;
+use App\Notifications\InvoiceChat ;
 
 
 class ChatImplement implements ChatRepository
@@ -133,13 +135,25 @@ class ChatImplement implements ChatRepository
 
     public function sendNewMessage($token, $threadId, $messageBody)
     {
-
         $message = Message::create([
             'thread_id' => $threadId,
             'user_id' => $token->id,
             'body' => $messageBody,
         ]);
 
-        return $message ;
+        $userToSendNotification = Participant::where(
+            [
+                ['thread_id', '=', $threadId],
+                ['user_id', '!=', $token->id],
+            ]
+        )->get();
+
+        $user = User::where('id' , $userToSendNotification[0]['user_id'])->first();
+
+        $when = now()->addMinutes(1);
+
+        $user->notify((new InvoiceChat($messageBody))->delay($when));
+
+        return $message;
     }
 }

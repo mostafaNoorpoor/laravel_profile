@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return (Hash::check($password, $this->OTP));
     }
+    // this is hook slack url
+    public function routeNotificationForSlack($notification)
+    {
+        return 'https://hooks.slack.com/services/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';
+    }
 }

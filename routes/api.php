@@ -2,9 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/test', 'MessageController@test');
-
-
 Route::group(['prefix' => 'messages' , 'middleware' => 'auth:api'], function () {
 
     Route::get('/threads', 'MessageController@getChatList');                           // get chat list

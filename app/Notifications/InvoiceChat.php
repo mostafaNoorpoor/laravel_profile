@@ -43,22 +43,17 @@ class InvoiceChat extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->subject('Invoice chat')
-                    ->from('admin@gmail.com','support')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                ->line('The introduction to the notification.')
+                ->subject('Invoice chat')
+                ->from('admin@gmail.com','support')
+                ->action('Notification Action', url('/'))
+                ->line($this->message);
     }
     public function toSlack($notifiable)
     {
-//        return (new SlackMessage)
-//            ->from('Laravel')
-//            ->to('#general')
-//            ->image('https://laravel.com/favicon.png')
-//            ->content('This will display the Laravel logo next to the message');
-//
         return (new SlackMessage)
-            ->success()
+            ->from('Laravel')
+            ->to('#general')
             ->image('https://laravel.com/favicon.png')
             ->content($this->message);
     }
@@ -71,7 +66,7 @@ class InvoiceChat extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'data' => 'this is my first notification'
+            'data' => $this->message
         ];
     }
 }

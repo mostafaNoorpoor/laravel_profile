@@ -28,19 +28,19 @@ class AuthController extends Controller
 
         $logIn = $this->user->getUserData($request->phone_number , $request->OTP);
 
-        if ($logIn == 1){
+        if ($logIn['success'] == 1){
 
             // hash checked and it is match
 
-            $token =  Self::createTokenPassport($request->phone_number , $request->OTP);
+            $token = Self::createTokenPassport($request->phone_number , $request->OTP);
 
-        } else if ($logIn == 2){
+        } else if ($logIn['success']  == 2){
 
             // hash checked and it not match
 
-            $token = 'not match';
+            $token= 'not match';
 
-        } else if ($logIn == 3){
+        } else if ($logIn['success']  == 3){
 
             // user not found with this number --> call register screen
 
@@ -65,6 +65,7 @@ class AuthController extends Controller
         $guzzle = new \GuzzleHttp\Client;
 
         $secretToken = 'FWfJccIkeHz59KmJAGc1Wc5L3S3MvNIDEl7psH2U' ;
+
         $clientId = '2' ;
 
         $response = $guzzle->post(url('/oauth/token'), [

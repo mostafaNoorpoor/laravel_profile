@@ -14,3 +14,14 @@
 Broadcast::channel('App.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+
+Broadcast::channel('chatChannel{userId}', function ($user , $userId) {
+    return $user->id === User::find($userId);
+ //   return auth()->check();
+});
+
+//Broadcast::channel('online', function ($user) {
+//    if (auth()->check()) {
+//        return $user->toArray();
+//    }
+//});

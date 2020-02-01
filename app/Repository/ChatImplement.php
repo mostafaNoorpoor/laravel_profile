@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Events\chatEvent;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable ;
@@ -135,6 +136,7 @@ class ChatImplement implements ChatRepository
 
     public function sendNewMessage($token, $threadId, $messageBody)
     {
+
         $message = Message::create([
             'thread_id' => $threadId,
             'user_id' => $token->id,
@@ -150,9 +152,13 @@ class ChatImplement implements ChatRepository
 
         $user = User::where('id' , $userToSendNotification[0]['user_id'])->first();
 
-        $when = now()->addMinutes(1);
+        event(new ChatEvent($messageBody , $user->id));
 
-        $user->notify((new InvoiceChat($messageBody))->delay($when));
+        // this comment is for slack and mail , database broadCasting notification
+
+//        $when = now()->addMinutes(1);
+//
+//        $user->notify((new InvoiceChat($messageBody))->delay($when));
 
         return $message;
     }
